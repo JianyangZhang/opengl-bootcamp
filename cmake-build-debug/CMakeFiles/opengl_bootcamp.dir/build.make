@@ -57,7 +57,6 @@ include CMakeFiles/opengl_bootcamp.dir/progress.make
 include CMakeFiles/opengl_bootcamp.dir/flags.make
 
 CMakeFiles/opengl_bootcamp.dir/main.cpp.obj: CMakeFiles/opengl_bootcamp.dir/flags.make
-CMakeFiles/opengl_bootcamp.dir/main.cpp.obj: CMakeFiles/opengl_bootcamp.dir/includes_CXX.rsp
 CMakeFiles/opengl_bootcamp.dir/main.cpp.obj: ../main.cpp
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=D:\CLionWorkSpace\opengl-bootcamp\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/opengl_bootcamp.dir/main.cpp.obj"
 	C:\GCC\MinGW\bin\g++.exe  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\opengl_bootcamp.dir\main.cpp.obj -c D:\CLionWorkSpace\opengl-bootcamp\main.cpp
@@ -90,8 +89,6 @@ opengl_bootcamp_EXTERNAL_OBJECTS =
 
 opengl_bootcamp.exe: CMakeFiles/opengl_bootcamp.dir/main.cpp.obj
 opengl_bootcamp.exe: CMakeFiles/opengl_bootcamp.dir/build.make
-opengl_bootcamp.exe: opengl-lib/glfw-3.1.2/src/libglfw3.a
-opengl_bootcamp.exe: opengl-lib/libGLEW_1130.a
 opengl_bootcamp.exe: CMakeFiles/opengl_bootcamp.dir/linklibs.rsp
 opengl_bootcamp.exe: CMakeFiles/opengl_bootcamp.dir/objects1.rsp
 opengl_bootcamp.exe: CMakeFiles/opengl_bootcamp.dir/link.txt
