@@ -1,3 +1,0 @@
-D:/CLionWorkSpace/opengl-bootcamp/cmake-build-debug/CMakeFiles/opengl_bootcamp.dir
-D:/CLionWorkSpace/opengl-bootcamp/cmake-build-debug/CMakeFiles/edit_cache.dir
-D:/CLionWorkSpace/opengl-bootcamp/cmake-build-debug/CMakeFiles/rebuild_cache.dir

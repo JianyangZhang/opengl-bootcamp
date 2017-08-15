@@ -1,3 +1,0 @@
-"C:\Program Files\JetBrains\CLion\bin\cmake\bin\cmake.exe" -E remove -f CMakeFiles\opengl_bootcamp.dir/objects.a
-C:\GCC\MinGW\bin\ar.exe cr CMakeFiles\opengl_bootcamp.dir/objects.a @CMakeFiles\opengl_bootcamp.dir\objects1.rsp
-C:\GCC\MinGW\bin\g++.exe -g   -Wl,--whole-archive CMakeFiles\opengl_bootcamp.dir/objects.a -Wl,--no-whole-archive  -o opengl_bootcamp.exe -Wl,--out-implib,libopengl_bootcamp.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\opengl_bootcamp.dir\linklibs.rsp
