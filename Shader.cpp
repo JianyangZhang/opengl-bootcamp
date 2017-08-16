@@ -42,7 +42,7 @@ void Shader::bind() {
 static GLuint createShader(const string& text, GLenum shaderType) {
 	GLuint shader = glCreateShader(shaderType);
 	if (shader == 0) {
-		std:cerr << "Error: shader creation failed" << std::endl;
+		cerr << "Error: shader creation failed" << endl;
 	}
 
 	const GLchar* p[1];
