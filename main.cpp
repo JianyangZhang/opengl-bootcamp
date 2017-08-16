@@ -1,11 +1,13 @@
 #include <iostream>
 #include <GL/glew.h>
+#include "display.h"
+#include "shader.h"
 
 void pause();
 
 int main(int argc, char** argv) {
-	std::cout << "Hello World!" << std::endl;
-	pause();
+	Display display(800, 600, "Hello World");
+	Shader shader("./res/basicShader");
 	return 0;
 }
 
