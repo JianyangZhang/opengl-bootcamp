@@ -9,7 +9,7 @@ public:
 	// Attributes
 	unsigned short	xres;			/* frame resolution */
 	unsigned short	yres;
-	GzPixel		*pixelbuffer;		/* pixel buffer array */
+	GzPixel* pixelbuffer;		/* pixel buffer array */
 	char* framebuffer;				/* buffer for display */
 	
 	// Memory management

@@ -1,22 +1,3 @@
-﻿  StdAfx.cpp
-  _WIN32_WINNT not defined. Defaulting to _WIN32_WINNT_MAXVER (see WinSDKVer.h)
-  rend.cpp
-  MainFrm.cpp
-  CS580HWView.cpp
-  CS580HWDoc.cpp
-  CS580HW.cpp
-CS580HW.cpp(57): warning C4996: 'CWinApp::Enable3dControls': CWinApp::Enable3dControls is no longer needed. You should remove this call.
-  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\atlmfc\include\afxwin.h(5224): note: see declaration of 'CWinApp::Enable3dControls'
-  Application1.cpp
-Application1.cpp(67): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\stdio.h(205): note: see declaration of 'fopen'
-Application1.cpp(74): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\stdio.h(205): note: see declaration of 'fopen'
-Application1.cpp(81): warning C4996: 'fscanf': This function or variable may be unsafe. Consider using fscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\stdio.h(1193): note: see declaration of 'fscanf'
-Application1.cpp(51): warning C4101: 'xRes': unreferenced local variable
-Application1.cpp(51): warning C4101: 'yRes': unreferenced local variable
-  Application.cpp
-  Generating Code...
+﻿  rend.cpp
   CS580HW1.vcxproj -> D:\VSWorkSpace\opengl-bootcamp\HW1\.\Debug\CS580HW1.exe
   CS580HW1.vcxproj -> .\Debug\CS580HW1.pdb (Full PDB)
