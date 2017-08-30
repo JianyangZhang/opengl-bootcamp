@@ -93,9 +93,9 @@ int GzRender::GzFlushDisplay2File(FILE* outfile) {
 	char r, g, b;
 	for (int i = 0; i < xres; i++) {
 		for (int j = 0; j < yres; j++) {
-			r = pixelbuffer[ARRAY(i, j)].red >> 4;
-			g = pixelbuffer[ARRAY(i, j)].green >> 4;
-			b = pixelbuffer[ARRAY(i, j)].blue >> 4;
+			r = pixelbuffer[ARRAY(j, i)].red >> 4;
+			g = pixelbuffer[ARRAY(j, i)].green >> 4;
+			b = pixelbuffer[ARRAY(j, i)].blue >> 4;
 			fprintf(outfile, "%c%c%c", r, g, b);
 		}
 	}
