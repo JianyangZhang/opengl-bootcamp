@@ -5,6 +5,7 @@
 #include "rend.h"
 #include <vector>
 #include <math.h>
+#include <limits.h>
 
 /* helper structs & functions */
 struct Vertex {
@@ -35,14 +36,13 @@ struct SpanLine {
 	void set(Vertex v1, Vertex v2) {
 		start = v1;
 		end = v2;
-		slope_z = (v2.z - v1.z) / (v2.y - v1.y);
+		slope_z = (v2.z - v1.z) / (v2.x - v1.x);
 	}
 };
 
 void getVertices(std::vector<Vertex>& vertices, GzPointer *valueList, int i);
 void sortByY(std::vector<Vertex>&);
 void setupEdges(std::vector<Edge>&, std::vector<Vertex>&, int&);
-void scan(std::vector<Edge>&, std::vector<Vertex>&, int&);
 
 /***********************************************/
 /* HW1 methods: copy here the methods from HW1 */
@@ -57,6 +57,7 @@ GzRender::GzRender(int xRes, int yRes) {
 	yres = yRes;
 	framebuffer = (char*) malloc(sizeof(GzPixel) * xRes * yRes);
 	pixelbuffer = (GzPixel*) malloc(sizeof(GzPixel) * xRes * yRes);
+	printf("started");
 }
 
 GzRender::~GzRender() {
@@ -72,11 +73,11 @@ int GzRender::GzDefault() {
 	}
 	for (int i = 0; i < xres; i++) {
 		for (int j = 0; j < yres; j++) {
-			pixelbuffer[ARRAY(i, j)].blue = 1000;
-			pixelbuffer[ARRAY(i, j)].green = 1000;
-			pixelbuffer[ARRAY(i, j)].red = 1000;
+			pixelbuffer[ARRAY(i, j)].blue = 3000;
+			pixelbuffer[ARRAY(i, j)].green = 3000;
+			pixelbuffer[ARRAY(i, j)].red = 3000;
 			pixelbuffer[ARRAY(i, j)].alpha = 1;
-			pixelbuffer[ARRAY(i, j)].z = 0;
+			pixelbuffer[ARRAY(i, j)].z = INT_MAX;
 		}
 	}
 	return GZ_SUCCESS;
@@ -179,7 +180,6 @@ int GzRender::GzPutAttribute(int numAttributes, GzToken* nameList, GzPointer* va
 	if (pixelbuffer == NULL) {
 		return GZ_FAILURE;
 	}
-
 	for (int i = 0; i < numAttributes; i++) {
 		if (nameList[i] == GZ_RGB_COLOR) {
 			GzColor* c = (GzColor*) valueList[i];
@@ -226,57 +226,114 @@ int GzRender::GzPutTriangle(int	numParts, GzToken *nameList, GzPointer *valueLis
 			setupEdges(edges, vertices, flag); // set up edges
 
 			// scan line to fill up the triangle
-			float dy = ceil(vertices[0].y) - vertices[0].y;
+			float dy;
+			float dx;
 			SpanLine spanLine;
-			GzIntensity* r;
-			GzIntensity* g;
-			GzIntensity* b;
-			GzIntensity* a;
-			GzDepth* z;
+			GzIntensity* r = (GzIntensity*) malloc(sizeof(GzIntensity));
+			GzIntensity* g = (GzIntensity*) malloc(sizeof(GzIntensity));
+			GzIntensity* b = (GzIntensity*) malloc(sizeof(GzIntensity));
+			GzIntensity* a = (GzIntensity*) malloc(sizeof(GzIntensity));
+			GzDepth* z = (GzDepth*) malloc(sizeof(GzDepth));
 
-			if (flag == 2) {
-				/******************** ABOVE MID-VERT ********************/
-				// first left point of span line
-				edges[0].current.x = edges[0].start.x + edges[0].slope_x * dy;
-				edges[0].current.y = edges[0].start.y + dy;
-				edges[0].current.z = edges[0].start.z + edges[0].slope_z * dy;
-				// first right point of span line
-				edges[2].current.x = edges[2].start.x + edges[2].slope_x * dy;
-				edges[2].current.y = edges[2].start.y + dy;
-				edges[2].current.z = edges[2].start.z + edges[2].slope_z * dy;
-				
-				while (edges[0].current.y < edges[0].end.y) {
-					// get a span line
+			/******************** ABOVE MID-VERT ********************/
+			dy = ceil(vertices[0].y) - vertices[0].y;
+
+			edges[0].current.x = edges[0].start.x + edges[0].slope_x * dy;
+			edges[0].current.y = edges[0].start.y + dy;
+			edges[0].current.z = edges[0].start.z + edges[0].slope_z * dy;
+
+			edges[2].current.x = edges[2].start.x + edges[2].slope_x * dy;
+			edges[2].current.y = edges[2].start.y + dy;
+			edges[2].current.z = edges[2].start.z + edges[2].slope_z * dy;
+
+			while (edges[0].current.y < edges[0].end.y) {
+				// get a span line
+				if (flag != 3) {
 					spanLine.set(edges[0].current, edges[2].current);
-					float dx = ceil(edges[0].current.x) - edges[0].current.x;
-					spanLine.current.x = edges[0].current.x + dx;
-					spanLine.current.y = edges[0].current.y;
-					spanLine.current.z = edges[0].current.z + edges[0].slope_z * dx;
-					// color this span line
-					while (spanLine.current.x < edges[2].current.x) {
-						if (spanLine.current.z < 0) { // behind camera
-							continue;
-						}
-						GzGet((int) spanLine.current.x, (int) spanLine.current.y, r, g, b, a, z);
-						if (spanLine.current.z <= *z) {
-							GzPut((int) spanLine.current.x, (int) spanLine.current.y, *r, *g, *b, *a, *z);
-						}
-						spanLine.current.x = spanLine.current.x + dx;
-						spanLine.current.z = edges[0].current.z + edges[0].slope_z * dx;
-					}
-					// next left point of the span line
-					edges[0].current.x = edges[0].start.x + edges[0].slope_x * dy;
-					edges[0].current.y = edges[0].start.y + dy;
-					edges[0].current.z = edges[0].start.z + edges[0].slope_z * dy;
-					// next right point of the span line
-					edges[2].current.x = edges[2].start.x + edges[2].slope_x * dy;
-					edges[2].current.y = edges[2].start.y + dy;
-					edges[2].current.z = edges[2].start.z + edges[2].slope_z * dy;
+					dx = ceil(edges[0].current.x) - edges[0].current.x;
+				} else {
+					spanLine.set(edges[2].current, edges[0].current);
+					dx = ceil(edges[2].current.x) - edges[2].current.x;
 				}
-				/******************** BELOW MID-VERT ********************/
+				
+				spanLine.current.x = spanLine.start.x + dx;
+				spanLine.current.y = spanLine.start.y;
+				spanLine.current.z = spanLine.start.z + spanLine.slope_z * dx;
+				// color this span line
+				while (spanLine.current.x < spanLine.end.x) {
+					if (spanLine.current.z < 0) { // behind the camera
+						spanLine.current.x = spanLine.current.x++;
+						spanLine.current.z = spanLine.current.z + spanLine.slope_z;
+						continue;
+					}
+					GzGet((int) spanLine.current.x, (int) spanLine.current.y, r, g, b, a, z);
+					if (spanLine.current.z <= *z) { // check shading
+						GzPut((int) spanLine.current.x, (int) spanLine.current.y, ctoi(flatcolor[RED]), ctoi(flatcolor[GREEN]), ctoi(flatcolor[BLUE]), 0, (GzDepth) spanLine.current.z);
+					}
+					spanLine.current.x = spanLine.current.x++;
+					spanLine.current.z = spanLine.current.z + spanLine.slope_z;
+				}
 
+				edges[0].current.x = edges[0].current.x + edges[0].slope_x;
+				edges[0].current.y = edges[0].current.y++;
+				edges[0].current.z = edges[0].current.z + edges[0].slope_z;
 
+				edges[2].current.x = edges[2].current.x + edges[2].slope_x;
+				edges[2].current.y = edges[2].current.y++;
+				edges[2].current.z = edges[2].current.z + edges[2].slope_z;
 			}
+
+			/******************** BELOW MID-VERT ********************/
+			dy = ceil(vertices[1].y) - vertices[1].y;
+
+			edges[1].current.x = edges[1].start.x + edges[1].slope_x * dy;
+			edges[1].current.y = edges[1].start.y + dy;
+			edges[1].current.z = edges[1].start.z + edges[1].slope_z * dy;
+
+			edges[2].current.x = edges[2].start.x + edges[2].slope_x * dy;
+			edges[2].current.y = edges[2].start.y + dy;
+			edges[2].current.z = edges[2].start.z + edges[2].slope_z * dy;
+
+			while (edges[1].current.y < edges[1].end.y) {
+				// get a span line
+				if (flag != 3) {
+					spanLine.set(edges[1].current, edges[2].current);
+					dx = ceil(edges[1].current.x) - edges[1].current.x;
+				} else {
+					spanLine.set(edges[2].current, edges[1].current);
+					dx = ceil(edges[2].current.x) - edges[2].current.x;
+				}
+				spanLine.current.x = spanLine.start.x + dx;
+				spanLine.current.y = spanLine.start.y;
+				spanLine.current.z = spanLine.start.z + spanLine.slope_z * dx;
+				// color this span line
+				while (spanLine.current.x < spanLine.end.x) {
+					if (spanLine.current.z < 0) { // behind the camera
+						spanLine.current.x = spanLine.current.x++;
+						spanLine.current.z = spanLine.current.z + spanLine.slope_z;
+						continue;
+					}
+					GzGet((int) spanLine.current.x, (int) spanLine.current.y, r, g, b, a, z);
+					if (spanLine.current.z <= *z) { // check shading
+						GzPut((int) spanLine.current.x, (int) spanLine.current.y, ctoi(flatcolor[RED]), ctoi(flatcolor[GREEN]), ctoi(flatcolor[BLUE]), 0, (GzDepth) spanLine.current.z);
+					}
+					spanLine.current.x = spanLine.current.x++;
+					spanLine.current.z = spanLine.current.z + spanLine.slope_z;
+				}
+
+				edges[1].current.x = edges[1].current.x + edges[1].slope_x;
+				edges[1].current.y = edges[1].current.y++;
+				edges[1].current.z = edges[1].current.z + edges[1].slope_z;
+
+				edges[2].current.x = edges[2].current.x + edges[2].slope_x;
+				edges[2].current.y = edges[2].current.y++;
+				edges[2].current.z = edges[2].current.z + edges[2].slope_z;
+			}
+			free(r);
+			free(g);
+			free(b);
+			free(a);
+			free(z);
 		}
 	}
 	return GZ_SUCCESS;
@@ -358,8 +415,8 @@ void setupEdges(std::vector<Edge>& edges, std::vector<Vertex>& vertices, int& fl
 		edges.push_back(e02);
 	} else {
 		flag = 3;
-		edges.push_back(e02);
 		edges.push_back(e01);
 		edges.push_back(e12);
+		edges.push_back(e02);
 	}
 }
