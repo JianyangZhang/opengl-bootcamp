@@ -37,24 +37,24 @@ class GzRender{			/* define a renderer */
   
 
 public:
-	unsigned short	xres;
-	unsigned short	yres;
-	GzPixel		*pixelbuffer;		/* frame buffer array */
+	unsigned short xres;
+	unsigned short yres;
+	GzPixel *pixelbuffer;		/* frame buffer array */
 	char* framebuffer;
 
-	GzCamera		camera;
-	short		matlevel;	/* top of stack - current xform */
-	GzMatrix		Ximage[MATLEVELS];	/* stack of xforms (Xsm) */
-	GzMatrix		Xnorm[MATLEVELS];	/* xform for norms (Xim) */
-	GzMatrix		Xsp;		/* NDC to screen (pers-to-screen) */
-	GzColor		flatcolor;    /* color state for flat shaded triangles */
-	int			interp_mode;
-	int			numlights;
-	GzLight		lights[MAX_LIGHTS];
-	GzLight		ambientlight;
-	GzColor		Ka, Kd, Ks;
-	float		spec;		/* specular power */
-	GzTexture		tex_fun;  /* tex_fun(float u, float v, GzColor color) */
+	GzCamera camera;
+	short matlevel;	/* top of stack - current xform */
+	GzMatrix Ximage[MATLEVELS];	/* stack of xforms (Xsm) */
+	GzMatrix Xnorm[MATLEVELS];	/* xform for norms (Xim) */
+	GzMatrix Xsp;		/* NDC to screen (pers-to-screen) */
+	GzColor flatcolor;    /* color state for flat shaded triangles */
+	int interp_mode;
+	int numlights;
+	GzLight	lights[MAX_LIGHTS];
+	GzLight	ambientlight;
+	GzColor	Ka, Kd, Ks;
+	float spec;		/* specular power */
+	GzTexture tex_fun;  /* tex_fun(float u, float v, GzColor color) */
 
 
 	// Constructors
@@ -75,7 +75,7 @@ public:
 	
 	// Extra methods: NOT part of API - just for general assistance */
 	inline int ARRAY(int x, int y){return x+(y*xres);}	/* simplify fbuf indexing */
-	inline short	ctoi(float color) {return(short)((int)(color * ((1 << 12) - 1)));}		/* convert float color to GzIntensity short */
+	inline short ctoi(float color) {return(short)((int)(color * ((1 << 12) - 1)));}		/* convert float color to GzIntensity short */
 };
 
 #endif
