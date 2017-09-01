@@ -1,8 +1,9 @@
+#include "gz.h"
+#include <vector>
+#include <limits.h>
 
-#include	"gz.h"
 #ifndef GZRENDER_
 #define GZRENDER_
-
 
 /* Camera defaults */
 #define	DEFAULT_FOV		35.0
@@ -31,7 +32,41 @@
 #define GzTexture	GzPointer
 #endif
 
+struct Vertex {
+	float x;
+	float y;
+	float z;
+};
 
+struct Edge {
+	Vertex start;
+	Vertex end;
+	Vertex current;
+	float slope_x;
+	float slope_z;
+	Edge(Vertex v1, Vertex v2) {
+		start = v1;
+		end = v2;
+		slope_x = (v2.x - v1.x) / (v2.y - v1.y);
+		slope_z = (v2.z - v1.z) / (v2.y - v1.y);
+	}
+};
+
+struct SpanLine {
+	Vertex start;
+	Vertex end;
+	Vertex current;
+	float slope_z;
+	void set(Vertex v1, Vertex v2) {
+		start = v1;
+		end = v2;
+		slope_z = (v2.z - v1.z) / (v2.x - v1.x);
+	}
+};
+
+void getVertices(std::vector<Vertex>& vertices, GzPointer *valueList, int i);
+void sortByY(std::vector<Vertex>&);
+void setupEdges(std::vector<Edge>&, std::vector<Vertex>&, bool&);
 
 class GzRender{			/* define a renderer */
   
@@ -72,6 +107,7 @@ public:
 	// HW2: Render methods
 	int GzPutAttribute(int numAttributes, GzToken *nameList, GzPointer *valueList);
 	int GzPutTriangle(int numParts, GzToken *nameList, GzPointer *valueList);
+	void scanLine(std::vector<Edge>& edges, std::vector<Vertex>& vertices, const bool& flag); /* fill up the triangle with color by Scan-Line */
 	
 	// Extra methods: NOT part of API - just for general assistance */
 	inline int ARRAY(int x, int y){return x+(y*xres);}	/* simplify fbuf indexing */
