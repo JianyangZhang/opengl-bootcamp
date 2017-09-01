@@ -42,7 +42,7 @@ struct SpanLine {
 
 void getVertices(std::vector<Vertex>& vertices, GzPointer *valueList, int i);
 void sortByY(std::vector<Vertex>&);
-void setupEdges(std::vector<Edge>&, std::vector<Vertex>&, int&);
+void setupEdges(std::vector<Edge>&, std::vector<Vertex>&, bool&);
 
 /***********************************************/
 /* HW1 methods: copy here the methods from HW1 */
@@ -220,7 +220,7 @@ int GzRender::GzPutTriangle(int	numParts, GzToken *nameList, GzPointer *valueLis
 		if (nameList[i] == GZ_POSITION) {
 			std::vector<Vertex> vertices;
 			std::vector<Edge> edges;
-			int flag;
+			bool flag;
 			getVertices(vertices, valueList, i); // get three vertices of a triangle
 			sortByY(vertices); // sort vertices by y
 			setupEdges(edges, vertices, flag); // set up edges
@@ -248,7 +248,7 @@ int GzRender::GzPutTriangle(int	numParts, GzToken *nameList, GzPointer *valueLis
 
 			while (edges[0].current.y < edges[0].end.y) {
 				// get a span line
-				if (flag != 3) {
+				if (flag) {
 					spanLine.set(edges[0].current, edges[2].current);
 					dx = ceil(edges[0].current.x) - edges[0].current.x;
 				} else {
@@ -290,13 +290,13 @@ int GzRender::GzPutTriangle(int	numParts, GzToken *nameList, GzPointer *valueLis
 			edges[1].current.y = edges[1].start.y + dy;
 			edges[1].current.z = edges[1].start.z + edges[1].slope_z * dy;
 
-			edges[2].current.x = edges[2].start.x + edges[2].slope_x * dy;
-			edges[2].current.y = edges[2].start.y + dy;
-			edges[2].current.z = edges[2].start.z + edges[2].slope_z * dy;
+			edges[2].current.x = edges[2].current.x + edges[2].slope_x * dy;
+			edges[2].current.y = edges[2].current.y + dy;
+			edges[2].current.z = edges[2].current.z + edges[2].slope_z * dy;
 
 			while (edges[1].current.y < edges[1].end.y) {
 				// get a span line
-				if (flag != 3) {
+				if (flag) {
 					spanLine.set(edges[1].current, edges[2].current);
 					dx = ceil(edges[1].current.x) - edges[1].current.x;
 				} else {
@@ -371,7 +371,7 @@ void sortByY(std::vector<Vertex>& vertices) {
 	}
 }
 
-void setupEdges(std::vector<Edge>& edges, std::vector<Vertex>& vertices, int& flag) {
+void setupEdges(std::vector<Edge>& edges, std::vector<Vertex>& vertices, bool& flag) {
 	Edge e01 = Edge(vertices[0], vertices[1]);
 	Edge e10 = Edge(vertices[1], vertices[0]);
 	Edge e02 = Edge(vertices[0], vertices[2]);
@@ -379,9 +379,9 @@ void setupEdges(std::vector<Edge>& edges, std::vector<Vertex>& vertices, int& fl
 	Edge e12 = Edge(vertices[1], vertices[2]);
 	Edge e21 = Edge(vertices[2], vertices[1]);
 
+	flag = true;
 	// inverted triangle
 	if (vertices[0].y == vertices[1].y) {
-		flag = 0;
 		if (e02.slope_x > e12.slope_x) {
 			edges.push_back(e10);
 			edges.push_back(e02);
@@ -395,7 +395,6 @@ void setupEdges(std::vector<Edge>& edges, std::vector<Vertex>& vertices, int& fl
 	}
 	// regular triangle
 	if (vertices[1].y == vertices[2].y) {
-		flag = 1;
 		if (e01.slope_x < e02.slope_x) {
 			edges.push_back(e01);
 			edges.push_back(e12);
@@ -409,12 +408,11 @@ void setupEdges(std::vector<Edge>& edges, std::vector<Vertex>& vertices, int& fl
 	}
 	// L or R triangle
 	if (e01.slope_x < e02.slope_x) {
-		flag = 2;
 		edges.push_back(e01);
 		edges.push_back(e12);
 		edges.push_back(e02);
 	} else {
-		flag = 3;
+		flag = false;
 		edges.push_back(e01);
 		edges.push_back(e12);
 		edges.push_back(e02);
