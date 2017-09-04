@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "stdio.h"
+#include "math.h"
 #include "rend.h"
 
 /***********************************************/
@@ -134,26 +135,20 @@ int GzRender::GzPutAttribute(int numAttributes, GzToken* nameList, GzPointer* va
 -- Set renderer attribute states (e.g.: GZ_RGB_COLOR default color)
 -- In later homeworks set shaders, interpolaters, texture maps, and lights
 */
-
+	
 	if (pixelbuffer == NULL) {
 		return GZ_FAILURE;
 	}
+
 	for (int i = 0; i < numAttributes; i++) {
 		if (nameList[i] == GZ_RGB_COLOR) {
-			GzColor* c = (GzColor*) valueList[i];
-			*c[0] = *c[0] > 0 ? *c[0] : 0;
-			*c[1] = *c[1] > 0 ? *c[1] : 0;
-			*c[2] = *c[2] > 0 ? *c[2] : 0;
-			*c[0] = *c[0] < 4095 ? *c[0] : 4095;
-			*c[1] = *c[1] < 4095 ? *c[1] : 4095;
-			*c[2] = *c[2] < 4095 ? *c[2] : 4095;
-
-			flatcolor[RED] = *c[0];
-			flatcolor[GREEN] = *c[1];
-			flatcolor[BLUE] = *c[2];
+			GzColor* color = (GzColor*) valueList[i];			
+			flatcolor[RED] = *color[0];
+			flatcolor[GREEN] = *color[1];
+			flatcolor[BLUE] = *color[2];
 		}
+		
 	}
-
 	return GZ_SUCCESS;
 }
 
