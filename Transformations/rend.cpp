@@ -1,5 +1,4 @@
 /* CS580 Homework 3 */
-
 #include	"stdafx.h"
 #include	"stdio.h"
 #include	"math.h"
@@ -14,7 +13,20 @@ int GzRender::GzRotXMat(float degree, GzMatrix mat)
 // Create rotate matrix : rotate along x axis
 // Pass back the matrix using mat value
 */
+	/*
+		1    0    0    0
+		0   cos -sin   0
+		0   sin  cos   0
+		0    0    0    1
+	*/
+	float radian = radianOf(degree);
+	mat[0][0] = 1;              mat[0][1] = 0;              mat[0][2] = 0;              mat[0][3] = 0;
 
+	mat[1][0] = 0;				mat[1][1] = cos(radian);    mat[1][2] = -sin(radian);   mat[1][3] = 0;
+
+	mat[2][0] = 0;              mat[2][1] = sin(radian);    mat[2][2] = cos(radian);    mat[2][3] = 0;
+
+	mat[3][0] = 0;              mat[3][1] = 0;              mat[3][2] = 0;              mat[3][3] = 1;
 	return GZ_SUCCESS;
 }
 
@@ -24,6 +36,20 @@ int GzRender::GzRotYMat(float degree, GzMatrix mat)
 // Create rotate matrix : rotate along y axis
 // Pass back the matrix using mat value
 */
+	/*
+	cos  0   sin  0
+	0    1    0   0
+   -sin  0   cos  0
+	0    0    0   1
+	*/
+	float radian = radianOf(degree);
+	mat[0][0] = cos(radian);    mat[0][1] = 0;              mat[0][2] = sin(radian);    mat[0][3] = 0;
+
+	mat[1][0] = 0;              mat[1][1] = 1;              mat[1][2] = 0;              mat[1][3] = 0;
+
+	mat[2][0] = -sin(radian);   mat[2][1] = 0;              mat[2][2] = cos(radian);    mat[2][3] = 0;
+
+	mat[3][0] = 0;              mat[3][1] = 0;              mat[3][2] = 0;              mat[3][3] = 1;
 
 	return GZ_SUCCESS;
 }
@@ -33,7 +59,21 @@ int GzRender::GzRotZMat(float degree, GzMatrix mat)
 /* HW 3.3
 // Create rotate matrix : rotate along z axis
 // Pass back the matrix using mat value
-*/
+*/	
+   /*
+	cos -sin  0   0
+	sin  cos  0   0
+    0    0    1   0
+	0    0    0   1
+	*/
+	float radian = radianOf(degree);
+	mat[0][0] = cos(radian);    mat[0][1] = -sin(radian);   mat[0][2] = 0;              mat[0][3] = 0;
+
+	mat[1][0] = sin(radian);    mat[1][1] = cos(radian);    mat[1][2] = 0;              mat[1][3] = 0;
+
+	mat[2][0] = 0;              mat[2][1] = 0;              mat[2][2] = 1;              mat[2][3] = 0;
+
+	mat[3][0] = 0;              mat[3][1] = 0;              mat[3][2] = 0;              mat[3][3] = 1;
 
 	return GZ_SUCCESS;
 }
@@ -44,7 +84,19 @@ int GzRender::GzTrxMat(GzCoord translate, GzMatrix mat)
 // Create translation matrix
 // Pass back the matrix using mat value
 */
+	/*
+     1,  0,  0,  tx
+     0,  1,  0,  ty
+     0,  0,  1,  tz
+     0,  0,  0,  1
+	*/
+	mat[0][0] = 1; mat[0][1] = 0; mat[0][2] = 0; mat[0][3] = translate[0];
 
+	mat[1][0] = 0; mat[1][1] = 1; mat[1][2] = 0; mat[1][3] = translate[1];
+
+	mat[2][0] = 0; mat[2][1] = 0; mat[2][2] = 1; mat[2][3] = translate[2];
+
+	mat[3][0] = 0; mat[3][1] = 0; mat[3][2] = 0; mat[3][3] = 1;
 	return GZ_SUCCESS;
 }
 
@@ -55,6 +107,19 @@ int GzRender::GzScaleMat(GzCoord scale, GzMatrix mat)
 // Create scaling matrix
 // Pass back the matrix using mat value
 */
+	/*
+	sx,  0,   0,   0
+	0,   sy,  0,   0
+	0,   0,   sz,  0
+	0,   0,   0,   1
+	*/
+	mat[0][0] = scale[0];      mat[0][1] = 0;           mat[0][2] = 0;          mat[0][3] = 0;
+
+	mat[1][0] = 0;             mat[1][1] = scale[1];    mat[1][2] = 0;          mat[1][3] = 0;
+
+	mat[2][0] = 0;             mat[2][1] = 0;           mat[2][2] = scale[2];   mat[2][3] = 0;
+
+	mat[3][0] = 0;             mat[3][1] = 0;           mat[3][2] = 0;          mat[3][3] = 1;
 
 	return GZ_SUCCESS;
 }
@@ -67,24 +132,56 @@ GzRender::GzRender(int xRes, int yRes)
  -- allocate memory for framebuffer : 3 bytes(b, g, r) x width x height
  -- allocate memory for pixel buffer
  */
-	framebuffer = (char*) malloc (3 * sizeof(char) * xRes * yRes);
+	xres = xRes;
+	yres = yRes;
+	framebuffer = (char*) malloc(sizeof(GzPixel) * xRes * yRes);
+	pixelbuffer = (GzPixel*) malloc(sizeof(GzPixel) * xRes * yRes);
 
 /* HW 3.6
 - setup Xsp and anything only done once 
 - init default camera 
 */ 
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			Xsp[i][j] = 0;
+			m_camera.Xiw[i][j] = 0;
+			m_camera.Xpi[i][j] = 0;
+		}
+	}
+	matlevel = 0;
+	m_camera.FOV = DEFAULT_FOV;
+	m_camera.lookat[0] = 0;
+	m_camera.lookat[1] = 0;
+	m_camera.lookat[2] = 0;
+	m_camera.position[0] = DEFAULT_IM_X;
+	m_camera.position[1] = DEFAULT_IM_Y;
+	m_camera.position[2] = DEFAULT_IM_Z;
+	m_camera.worldup[0] = 0;
+	m_camera.worldup[1] = 1;
+	m_camera.worldup[2] = 0;
 }
 
 GzRender::~GzRender()
 {
 /* HW1.2 clean up, free buffer memory */
-
+	free(pixelbuffer);
+	free(framebuffer);
 }
 
-int GzRender::GzDefault()
-{
-/* HW1.3 set pixel buffer to some default values - start a new frame */
-
+int GzRender::GzDefault() {
+	/* HW1.3 set pixel buffer to some default values - start a new frame */
+	if (pixelbuffer == NULL) {
+		return GZ_FAILURE;
+	}
+	for (int i = 0; i < xres; i++) {
+		for (int j = 0; j < yres; j++) {
+			pixelbuffer[ARRAY(i, j)].blue = 3000;
+			pixelbuffer[ARRAY(i, j)].green = 3000;
+			pixelbuffer[ARRAY(i, j)].red = 3000;
+			pixelbuffer[ARRAY(i, j)].alpha = 1;
+			pixelbuffer[ARRAY(i, j)].z = INT_MAX;
+		}
+	}
 	return GZ_SUCCESS;
 }
 
@@ -105,7 +202,19 @@ int GzRender::GzPutCamera(GzCamera camera)
 /* HW 3.8 
 /*- overwrite renderer camera structure with new camera definition
 */
+	m_camera.FOV = camera.FOV;
 
+	m_camera.position[0] = camera.position[0];
+	m_camera.position[1] = camera.position[1];
+	m_camera.position[2] = camera.position[2];
+
+	m_camera.lookat[0] = camera.lookat[0];
+	m_camera.lookat[1] = camera.lookat[1];
+	m_camera.lookat[2] = camera.lookat[2];
+
+	m_camera.worldup[0] = camera.worldup[0];
+	m_camera.worldup[1] = camera.worldup[1];
+	m_camera.worldup[2] = camera.worldup[2];
 	return GZ_SUCCESS;	
 }
 
@@ -115,7 +224,30 @@ int GzRender::GzPushMatrix(GzMatrix	matrix)
 - push a matrix onto the Ximage stack
 - check for stack overflow
 */
-	
+	if (matlevel >= MATLEVELS) {
+		return GZ_FAILURE;
+	}
+	if (matlevel == 0) {
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 4; j++) {
+				Ximage[matlevel][i][j] = matrix[i][j];
+			}
+		}
+	} else {
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 4; j++) {
+				Ximage[matlevel][i][j] = 0;
+			}
+		}
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 4; j++) {
+				for (int k = 0; k < 4; k++) {
+					Ximage[matlevel][i][j] += Ximage[matlevel - 1][i][k] * matrix[k][j];
+				}
+			}
+		}
+	}
+	matlevel++;
 	return GZ_SUCCESS;
 }
 
@@ -125,40 +257,92 @@ int GzRender::GzPopMatrix()
 - pop a matrix off the Ximage stack
 - check for stack underflow
 */
+	if (matlevel <= 0) {
+		return GZ_FAILURE;
+	}
+	matlevel--;
+	return GZ_SUCCESS;
+}
+
+int GzRender::GzPut(int i, int j, GzIntensity r, GzIntensity g, GzIntensity b, GzIntensity a, GzDepth z) {
+	/* HW1.4 write pixel values into the buffer */
+	if (pixelbuffer == NULL || i < 0 || j < 0 || i >= xres || j >= yres) {
+		return GZ_FAILURE;
+	}
+
+	b = (b > 0) ? b : 0;
+	g = (g > 0) ? g : 0;
+	r = (r > 0) ? r : 0;
+	b = (b < 4095) ? b : 4095;
+	g = (g < 4095) ? g : 4095;
+	r = (r < 4095) ? r : 4095;
+
+	pixelbuffer[ARRAY(i, j)].blue = b;
+	pixelbuffer[ARRAY(i, j)].green = g;
+	pixelbuffer[ARRAY(i, j)].red = r;
+	pixelbuffer[ARRAY(i, j)].alpha = a;
+	pixelbuffer[ARRAY(i, j)].z = z;
 
 	return GZ_SUCCESS;
 }
 
-int GzRender::GzPut(int i, int j, GzIntensity r, GzIntensity g, GzIntensity b, GzIntensity a, GzDepth z)
-{
-/* HW1.4 write pixel values into the buffer */
+
+int GzRender::GzGet(int i, int j, GzIntensity* r, GzIntensity* g, GzIntensity* b, GzIntensity* a, GzDepth* z) {
+	/* HW1.5 retrieve a pixel information from the pixel buffer */
+	if (pixelbuffer == NULL || i < 0 || j < 0 || i >= xres || j >= yres) {
+		return GZ_FAILURE;
+	}
+
+	*b = pixelbuffer[ARRAY(i, j)].blue;
+	*g = pixelbuffer[ARRAY(i, j)].green;
+	*r = pixelbuffer[ARRAY(i, j)].red;
+	*a = pixelbuffer[ARRAY(i, j)].alpha;
+	*z = pixelbuffer[ARRAY(i, j)].z;
 
 	return GZ_SUCCESS;
 }
 
 
-int GzRender::GzGet(int i, int j, GzIntensity *r, GzIntensity *g, GzIntensity *b, GzIntensity *a, GzDepth *z)
-{
-/* HW1.5 retrieve a pixel information from the pixel buffer */
+int GzRender::GzFlushDisplay2File(FILE* outfile) {
+	/* HW1.6 write image to ppm file -- "P6 %d %d 255\r" */
+	if (pixelbuffer == NULL || outfile == NULL) {
+		return GZ_FAILURE;
+	}
 
+	fprintf(outfile, "P6 %d %d 255\r", xres, yres);
+	char r, g, b;
+	for (int i = 0; i < xres; i++) {
+		for (int j = 0; j < yres; j++) {
+			r = pixelbuffer[ARRAY(j, i)].red >> 4;
+			g = pixelbuffer[ARRAY(j, i)].green >> 4;
+			b = pixelbuffer[ARRAY(j, i)].blue >> 4;
+			fprintf(outfile, "%c%c%c", r, g, b);
+		}
+	}
 	return GZ_SUCCESS;
 }
 
-
-int GzRender::GzFlushDisplay2File(FILE* outfile)
-{
-/* HW1.6 write image to ppm file -- "P6 %d %d 255\r" */
-	
-	return GZ_SUCCESS;
-}
-
-int GzRender::GzFlushDisplay2FrameBuffer()
-{
-/* HW1.7 write pixels to framebuffer: 
+int GzRender::GzFlushDisplay2FrameBuffer() {
+	/* HW1.7 write pixels to framebuffer:
 	- put the pixels into the frame buffer
-	- CAUTION: when storing the pixels into the frame buffer, the order is blue, green, and red 
+	- CAUTION: when storing the pixels into the frame buffer, the order is blue, green, and red
 	- NOT red, green, and blue !!!
-*/
+	*/
+	if (pixelbuffer == NULL || framebuffer == NULL) {
+		return GZ_FAILURE;
+	}
+
+	char b, g, r;
+	for (int i = 0; i < xres; i++) {
+		for (int j = 0; j < yres; j++) {
+			b = pixelbuffer[ARRAY(i, j)].blue >> 4;
+			g = pixelbuffer[ARRAY(i, j)].green >> 4;
+			r = pixelbuffer[ARRAY(i, j)].red >> 4;
+			framebuffer[ARRAY(i, j) * 3] = b;
+			framebuffer[ARRAY(i, j) * 3 + 1] = g;
+			framebuffer[ARRAY(i, j) * 3 + 2] = r;
+		}
+	}
 
 	return GZ_SUCCESS;
 }
@@ -199,7 +383,6 @@ int GzRender::GzPutTriangle(int	numParts, GzToken *nameList, GzPointer *valueLis
 	-- Invoke the rastrizer/scanline framework
 	-- Return error code
 	*/
-	
 	if (pixelbuffer == NULL) {
 		return GZ_FAILURE;
 	}
@@ -412,5 +595,3 @@ void GzRender::scanLine(std::vector<Edge>& edges, std::vector<Vertex>& vertices,
 	free(a);
 	free(z);
 };
-
-

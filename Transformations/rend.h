@@ -1,4 +1,4 @@
-#include	"gz.h"
+#include "gz.h"
 #include <vector>
 #include <limits.h>
 
@@ -115,9 +115,9 @@ public:
 	int GzPopMatrix();
 	
 	// Extra methods: NOT part of API - just for general assistance */
-	inline int ARRAY(int x, int y){return (x+y*xres);}	/* simplify fbuf indexing */
-	inline short	ctoi(float color) {return(short)((int)(color * ((1 << 12) - 1)));}		/* convert float color to GzIntensity short */
-	
+	inline int ARRAY(int x, int y){ return (x+y*xres); }	/* simplify fbuf indexing */
+	inline short	ctoi(float color) { return(short)((int)(color * ((1 << 12) - 1))); } /* convert float color to GzIntensity short */
+	inline float radianOf(float degree) { return (float) (degree / 180) * 3.141592653; } /* convert degree to radian*/
 
 	// Object Translation
 	int GzRotXMat(float degree, GzMatrix mat);
