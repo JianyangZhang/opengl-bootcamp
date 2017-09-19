@@ -1,7 +1,7 @@
 #include "gz.h"
 #include <vector>
 #include <limits.h>
-
+#define PI (float) 3.14159265358979323846
 #ifndef GZRENDER_
 #define GZRENDER_
 
@@ -65,10 +65,13 @@ struct SpanLine {
 void getVertices(std::vector<Vertex>& vertices, GzPointer *valueList, int i);
 void sortByY(std::vector<Vertex>&);
 void setupEdges(std::vector<Edge>&, std::vector<Vertex>&, bool&);
+Vertex normalize(const Vertex&);
+float dotProduct(const Vertex&, const Vertex&);
+Vertex crossProduct(const Vertex&, const Vertex&);
+void worldSpaceToScreenSpace(std::vector<Vertex>&, GzMatrix, std::vector<Vertex>&);
+int checkTri(std::vector<Vertex>&, unsigned short, unsigned short);
 
 class GzRender{			/* define a renderer */
-  
-
 public:
 	unsigned short	xres;
 	unsigned short	yres;
@@ -117,7 +120,7 @@ public:
 	// Extra methods: NOT part of API - just for general assistance */
 	inline int ARRAY(int x, int y){ return (x+y*xres); }	/* simplify fbuf indexing */
 	inline short	ctoi(float color) { return(short)((int)(color * ((1 << 12) - 1))); } /* convert float color to GzIntensity short */
-	inline float radianOf(float degree) { return (float) (degree / 180) * 3.141592653; } /* convert degree to radian*/
+	inline float radianOf(float degree) { return (float) (degree / 180) * PI; } /* convert degree to radian*/
 
 	// Object Translation
 	int GzRotXMat(float degree, GzMatrix mat);

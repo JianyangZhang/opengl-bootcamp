@@ -1,2 +1,7 @@
-﻿  CS580HW3.vcxproj -> D:\VSWorkSpace\opengl-bootcamp\transformations\.\Debug\CS580HW3.exe
+﻿  rend.cpp
+rend.cpp(201): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+rend.cpp(204): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+rend.cpp(207): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+rend.cpp(209): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  CS580HW3.vcxproj -> D:\VSWorkSpace\opengl-bootcamp\transformations\.\Debug\CS580HW3.exe
   CS580HW3.vcxproj -> .\Debug\CS580HW3.pdb (Full PDB)
