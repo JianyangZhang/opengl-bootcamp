@@ -62,14 +62,24 @@ struct SpanLine {
 	}
 };
 
+// helper functions used in rend.cpp
+void setupTriangle(GzCoord*);
+void swap(float*, float*);
+void getZplane(const GzCoord*, float*, float*, float*, float*);
+float getEdge(const float*, const float*, int, int, bool);
+void toScreen(const GzCoord*, GzMatrix, GzCoord*);
+int normalize(GzCoord);
+
+/*
+helper functions of previous scanline approach
 void getVertices(std::vector<Vertex>& vertices, GzPointer *valueList, int i);
 void sortByY(std::vector<Vertex>&);
 void setupEdges(std::vector<Edge>&, std::vector<Vertex>&, bool&);
-Vertex normalize(const Vertex&);
 float dotProduct(const Vertex&, const Vertex&);
 Vertex crossProduct(const Vertex&, const Vertex&);
 void worldSpaceToScreenSpace(std::vector<Vertex>&, GzMatrix, std::vector<Vertex>&);
 int checkTri(std::vector<Vertex>&, unsigned short, unsigned short);
+*/
 
 class GzRender{			/* define a renderer */
 public:
@@ -92,7 +102,6 @@ public:
 	float		spec;		/* specular power */
 	GzTexture		tex_fun;  /* tex_fun(float u, float v, GzColor color) */
 
-
 	// Constructors
 	GzRender(int xRes, int yRes);
 	~GzRender();
@@ -109,7 +118,9 @@ public:
 	// HW2: Render methods
 	int GzPutAttribute(int numAttributes, GzToken *nameList, GzPointer *valueList);
 	int GzPutTriangle(int numParts, GzToken *nameList, GzPointer *valueList);
-	void scanLine(std::vector<Edge>& edges, std::vector<Vertex>& vertices, const bool& flag); /* fill up the triangle with color by Scan-Line */
+	void LEE(GzCoord* vertices);
+	// void scanLine(std::vector<Edge>& edges, std::vector<Vertex>& vertices, const bool& flag);
+	
 	
 	// HW3
 	int GzDefaultCamera();
@@ -119,7 +130,7 @@ public:
 	
 	// Extra methods: NOT part of API - just for general assistance */
 	inline int ARRAY(int x, int y){ return (x+y*xres); }	/* simplify fbuf indexing */
-	inline short	ctoi(float color) { return(short)((int)(color * ((1 << 12) - 1))); } /* convert float color to GzIntensity short */
+	inline short ctoi(float color) { return(short)((int)(color * ((1 << 12) - 1))); } /* convert float color to GzIntensity short */
 	inline float radianOf(float degree) { return (float) (degree / 180) * PI; } /* convert degree to radian*/
 
 	// Object Translation
