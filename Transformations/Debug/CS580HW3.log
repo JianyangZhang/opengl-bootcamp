@@ -1,2 +1,13 @@
-﻿  CS580HW3.vcxproj -> D:\VSWorkSpace\opengl-bootcamp\transformations\.\Debug\CS580HW3.exe
+﻿  rend.cpp
+rend.cpp(154): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+rend.cpp(157): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+rend.cpp(160): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+rend.cpp(162): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+rend.cpp(166): warning C4305: '=': truncation from 'INT' to 'float'
+rend.cpp(499): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+rend.cpp(500): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+rend.cpp(501): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+rend.cpp(502): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+rend.cpp(533): warning C4244: '=': conversion from 'float' to 'GzDepth', possible loss of data
+  CS580HW3.vcxproj -> D:\VSWorkSpace\opengl-bootcamp\transformations\.\Debug\CS580HW3.exe
   CS580HW3.vcxproj -> .\Debug\CS580HW3.pdb (Full PDB)

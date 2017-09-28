@@ -146,24 +146,24 @@ GzRender::GzRender(int xRes, int yRes)
 - init default camera 
 */ 
 	matlevel = 0;
-
-	// setup Xsp
 	float d;
 	float radian = radianOf(m_camera.FOV);
 	d = 1 / (tan(radian / 2));
-	Xsp[0][0] = xres / 2.0;
+
+	// setup Xsp (scales NDC to screen)
+	Xsp[0][0] = xres / 2;
 	Xsp[0][1] = 0;
 	Xsp[0][2] = 0;
-	Xsp[0][3] = xres / 2.0;
+	Xsp[0][3] = xres / 2;
 
 	Xsp[1][0] = 0;
-	Xsp[1][1] = -yres / 2.0;
+	Xsp[1][1] = -yres / 2;
 	Xsp[1][2] = 0;
-	Xsp[1][3] = yres / 2.0;
+	Xsp[1][3] = yres / 2;
 
 	Xsp[2][0] = 0;
 	Xsp[2][1] = 0;
-	Xsp[2][2] = MAXINT;
+	Xsp[2][2] = MAXINT; // scale screen space "z" range
 	Xsp[2][3] = 0;
 
 	Xsp[3][0] = 0;
@@ -240,47 +240,45 @@ int GzRender::GzBeginRender()
 	m_camera.Xpi[3][3] = 1;
 	
 	// ---------------- Xiw ----------------
-	GzCoord cl, camZ;
+	GzCoord cl, cameraU, cameraX, cameraY, cameraZ;
 	cl[X] = m_camera.lookat[X] - m_camera.position[X];
 	cl[Y] = m_camera.lookat[Y] - m_camera.position[Y];
 	cl[Z] = m_camera.lookat[Z] - m_camera.position[Z];
 	normalize(cl);
-	camZ[X] = cl[X];
-	camZ[Y] = cl[Y];
-	camZ[Z] = cl[Z];
-	normalize(camZ);
+	cameraZ[X] = cl[X];
+	cameraZ[Y] = cl[Y];
+	cameraZ[Z] = cl[Z];
+	normalize(cameraZ);
 
-	GzCoord camUp, camY;
-	float upDotZ = m_camera.worldup[X] * camZ[X] + m_camera.worldup[Y] * camZ[Y] + m_camera.worldup[Z] * camZ[Z];
-	camUp[X] = m_camera.worldup[X] - upDotZ*camZ[X];
-	camUp[Y] = m_camera.worldup[Y] - upDotZ*camZ[Y];
-	camUp[Z] = m_camera.worldup[Z] - upDotZ*camZ[Z];
-	normalize(camUp);
-	camY[X] = camUp[X];
-	camY[Y] = camUp[Y];
-	camY[Z] = camUp[Z];
-	normalize(camY);
+	float upDotZ = m_camera.worldup[X] * cameraZ[X] + m_camera.worldup[Y] * cameraZ[Y] + m_camera.worldup[Z] * cameraZ[Z];
+	cameraU[X] = m_camera.worldup[X] - upDotZ*cameraZ[X];
+	cameraU[Y] = m_camera.worldup[Y] - upDotZ*cameraZ[Y];
+	cameraU[Z] = m_camera.worldup[Z] - upDotZ*cameraZ[Z];
+	normalize(cameraU);
+	cameraY[X] = cameraU[X];
+	cameraY[Y] = cameraU[Y];
+	cameraY[Z] = cameraU[Z];
+	normalize(cameraY);
 
-	GzCoord camX;
-	camX[X] = camY[Y] * camZ[Z] - camY[Z] * camZ[Y];
-	camX[Y] = camY[Z] * camZ[X] - camY[X] * camZ[Z];
-	camX[Z] = camY[X] * camZ[Y] - camY[Y] * camZ[X];
-	normalize(camX);
+	cameraX[X] = cameraY[Y] * cameraZ[Z] - cameraY[Z] * cameraZ[Y];
+	cameraX[Y] = cameraY[Z] * cameraZ[X] - cameraY[X] * cameraZ[Z];
+	cameraX[Z] = cameraY[X] * cameraZ[Y] - cameraY[Y] * cameraZ[X];
+	normalize(cameraX);
 
-	m_camera.Xiw[0][0] = camX[X];
-	m_camera.Xiw[0][1] = camX[Y];
-	m_camera.Xiw[0][2] = camX[Z];
-	m_camera.Xiw[0][3] = -(camX[X] * m_camera.position[X] + camX[Y] * m_camera.position[Y] + camX[Z] * m_camera.position[Z]);
+	m_camera.Xiw[0][0] = cameraX[X];
+	m_camera.Xiw[0][1] = cameraX[Y];
+	m_camera.Xiw[0][2] = cameraX[Z];
+	m_camera.Xiw[0][3] = -(cameraX[X] * m_camera.position[X] + cameraX[Y] * m_camera.position[Y] + cameraX[Z] * m_camera.position[Z]);
 
-	m_camera.Xiw[1][0] = camY[X];
-	m_camera.Xiw[1][1] = camY[Y];
-	m_camera.Xiw[1][2] = camY[Z];
-	m_camera.Xiw[1][3] = -(camY[X] * m_camera.position[X] + camY[Y] * m_camera.position[Y] + camY[Z] * m_camera.position[Z]);
+	m_camera.Xiw[1][0] = cameraY[X];
+	m_camera.Xiw[1][1] = cameraY[Y];
+	m_camera.Xiw[1][2] = cameraY[Z];
+	m_camera.Xiw[1][3] = -(cameraY[X] * m_camera.position[X] + cameraY[Y] * m_camera.position[Y] + cameraY[Z] * m_camera.position[Z]);
 
-	m_camera.Xiw[2][0] = camZ[X];
-	m_camera.Xiw[2][1] = camZ[Y];
-	m_camera.Xiw[2][2] = camZ[Z];
-	m_camera.Xiw[2][3] = -(camZ[X] * m_camera.position[X] + camZ[Y] * m_camera.position[Y] + camZ[Z] * m_camera.position[Z]);
+	m_camera.Xiw[2][0] = cameraZ[X];
+	m_camera.Xiw[2][1] = cameraZ[Y];
+	m_camera.Xiw[2][2] = cameraZ[Z];
+	m_camera.Xiw[2][3] = -(cameraZ[X] * m_camera.position[X] + cameraZ[Y] * m_camera.position[Y] + cameraZ[Z] * m_camera.position[Z]);
 
 	m_camera.Xiw[3][0] = 0;
 	m_camera.Xiw[3][1] = 0;
@@ -461,76 +459,79 @@ int GzRender::GzPutAttribute(int numAttributes, GzToken* nameList, GzPointer* va
 }
 
 int GzRender::GzPutTriangle(int	numParts, GzToken *nameList, GzPointer *valueList) {
-	GzCoord* vertices_model;
-	GzCoord* vertices_screen;
-	vertices_screen = (GzCoord*) malloc(sizeof(GzCoord) * 3);
+	GzCoord* model_vert;
+	GzCoord* screen_vert;
+	bool showInScreen = FALSE;
+
+	screen_vert = (GzCoord*) malloc(sizeof(GzCoord) * 3);
 	for (int i = 0; i < numParts; i++) {
 		if (nameList[i] == GZ_NULL_TOKEN) {
 			continue;
 		}
 		if (nameList[i] == GZ_POSITION) {
-			vertices_model = (GzCoord*) valueList[i];
-			toScreen(vertices_model, Ximage[matlevel - 1], vertices_screen);
+			model_vert = (GzCoord*) valueList[i];
+			toScreen(model_vert, Ximage[matlevel - 1], screen_vert);
 		}
 	}
-
-	bool inScreen = FALSE;
+	
 	for (int i = 0; i < 3; i++) {
-		if (vertices_screen[i][X] >= 0 && vertices_screen[i][X] < xres &&
-			vertices_screen[i][Y] >= 0 && vertices_screen[i][Y] < yres) {
-			inScreen = TRUE;
+		if (screen_vert[i][X] >= 0 && screen_vert[i][X] < xres &&
+			screen_vert[i][Y] >= 0 && screen_vert[i][Y] < yres) {
+			showInScreen = TRUE;
 			break;
 		}
 	}
 
-	if (vertices_screen[0][Z] > 0 && vertices_screen[1][Z] > 0 && vertices_screen[2][Z] > 0 && inScreen) {
-		setupTriangle(vertices_screen);
-		LEE(vertices_screen);
+	if (screen_vert[0][Z] > 0 && screen_vert[1][Z] > 0 && screen_vert[2][Z] > 0 && showInScreen) {
+		setupTriangle(screen_vert);
+		LEE(screen_vert);
 	}
 	return GZ_SUCCESS;
 }
 
 void GzRender::LEE(GzCoord* vertices) {
-	int Up = floor(vertices[0][Y]);
-	int Down = ceil(vertices[1][Y] > vertices[2][Y] ? vertices[1][Y] : vertices[2][Y]);
-	int Left = floor(min(min(vertices[0][X], vertices[1][X]), vertices[2][X]));
-	int Right = ceil(max(max(vertices[0][X], vertices[1][X]), vertices[2][X]));
-	bool E01Right;
-	bool E12Right;
-	bool E20Right;
 	GzIntensity red, green, blue, alpha;
-	GzDepth fbZ;
-	if (vertices[0][Y] == vertices[1][Y] || vertices[1][Y] < vertices[2][Y]) {
-		E01Right = true;
-		E12Right = true;
-		E20Right = false;
-	} else {
-		E01Right = true;
-		E12Right = false;
-		E20Right = false;
-	}
+	GzDepth fb_z;
 	float A, B, C, D;
+	int u, d, l, r;
+	bool e01_r, e12_r, e20_r;
+
+	u = floor(vertices[0][Y]);
+	d = ceil(vertices[1][Y] > vertices[2][Y] ? vertices[1][Y] : vertices[2][Y]);
+	l = floor(min(min(vertices[0][X], vertices[1][X]), vertices[2][X]));
+	r = ceil(max(max(vertices[0][X], vertices[1][X]), vertices[2][X]));
+
+	if (vertices[0][Y] == vertices[1][Y] || vertices[1][Y] < vertices[2][Y]) {
+		e01_r = true;
+		e12_r = true;
+		e20_r = false;
+	} else {
+		e01_r = true;
+		e12_r = false;
+		e20_r = false;
+	}
+	
 	getZplane(vertices, &A, &B, &C, &D);
-	for (int j = Up; j < Down; j++) {
+	for (int j = u; j < d; j++) {
 		if (j < 0 || j > xres) {
 			continue;
 		}
-		for (int i = Left; i < Right; i++) {
+		for (int i = l; i < r; i++) {
 			if (i < 0 || i > yres) {
 				continue;
 			}
-			float E01 = getEdge(vertices[0], vertices[1], i, j, E01Right);
-			float E12 = getEdge(vertices[1], vertices[2], i, j, E12Right);
-			float E20 = getEdge(vertices[2], vertices[0], i, j, E20Right);
-			if (E01 > 0 && E12 > 0 && E20 > 0 || E01 < 0 && E12 < 0 && E20 < 0) {
-				float pointZ = (-A * i - B * j - D) / C;
-				GzGet(i, j, &red, &green, &blue, &alpha, &fbZ);
-				if (pointZ > 0 && pointZ < fbZ) {
+			float e01 = getEdge(vertices[0], vertices[1], i, j, e01_r);
+			float e12 = getEdge(vertices[1], vertices[2], i, j, e12_r);
+			float e20 = getEdge(vertices[2], vertices[0], i, j, e20_r);
+			if (e01 > 0 && e12 > 0 && e20 > 0 || e01 < 0 && e12 < 0 && e20 < 0) {
+				float coord_z = (-A * i - B * j - D) / C;
+				GzGet(i, j, &red, &green, &blue, &alpha, &fb_z);
+				if (coord_z > 0 && coord_z < fb_z) {
 					red = ctoi(flatcolor[0]);
 					green = ctoi(flatcolor[1]);
 					blue = ctoi(flatcolor[2]);
-					fbZ = pointZ;
-					GzPut(i, j, red, green, blue, alpha, fbZ);
+					fb_z = coord_z;
+					GzPut(i, j, red, green, blue, alpha, fb_z);
 				}
 			}
 		}
@@ -560,31 +561,30 @@ void setupTriangle(GzCoord* vertices) {
 }
 
 void swap(float* v1, float* v2) {
-	float tempx = v1[X];
-	float tempy = v1[Y];
-	float tempz = v1[Z];
+	float tempX = v1[X];
+	float tempY = v1[Y];
+	float tempZ = v1[Z];
 	v1[X] = v2[X];
 	v1[Y] = v2[Y];
 	v1[Z] = v2[Z];
-	v2[X] = tempx;
-	v2[Y] = tempy;
-	v2[Z] = tempz;
+	v2[X] = tempX;
+	v2[Y] = tempY;
+	v2[Z] = tempZ;
 }
 
 void getZplane(const GzCoord* vertices, float* A, float* B, float* C, float* D) {
-	GzCoord E01;
-	E01[X] = vertices[1][X] - vertices[0][X];
-	E01[Y] = vertices[1][Y] - vertices[0][Y];
-	E01[Z] = vertices[1][Z] - vertices[0][Z];
-	GzCoord E12;
-	E12[X] = vertices[2][X] - vertices[1][X];
-	E12[Y] = vertices[2][Y] - vertices[1][Y];
-	E12[Z] = vertices[2][Z] - vertices[1][Z];
+	GzCoord e01, e12;
+	e01[X] = vertices[1][X] - vertices[0][X];
+	e01[Y] = vertices[1][Y] - vertices[0][Y];
+	e01[Z] = vertices[1][Z] - vertices[0][Z];
 
-	*A = E01[Y] * E12[Z] - E01[Z] * E12[Y];
-	*B = E01[Z] * E12[X] - E01[X] * E12[Z];
-	*C = E01[X] * E12[Y] - E01[Y] * E12[X];
+	e12[X] = vertices[2][X] - vertices[1][X];
+	e12[Y] = vertices[2][Y] - vertices[1][Y];
+	e12[Z] = vertices[2][Z] - vertices[1][Z];
 
+	*A = e01[Y] * e12[Z] - e01[Z] * e12[Y];
+	*B = e01[Z] * e12[X] - e01[X] * e12[Z];
+	*C = e01[X] * e12[Y] - e01[Y] * e12[X];
 	*D = -*A * (vertices[0][X]) - *B * (vertices[0][Y]) - *C * (vertices[0][Z]);
 }
 
@@ -592,30 +592,30 @@ float getEdge(const float* start, const float* end, int x, int y, bool right) {
 	return (end[Y] - start[Y]) * (x - start[X]) - (end[X] - start[X]) * (y - start[Y]);
 }
 
-void toScreen(const GzCoord* vert_world, GzMatrix Xsw, GzCoord* vert_screen) {
-	float tri_world[4][3];
-	float tri_screen[4][3];
+void toScreen(const GzCoord* model_vert, GzMatrix Xsw, GzCoord* screen_vert) {
+	float world_tri[4][3];
+	float screen_tri[4][3];
 
 	for (int i = 0; i < 4; i++)
 		for (int j = 0; j < 3; j++)
-			tri_screen[i][j] = 0;
+			screen_tri[i][j] = 0;
 
 	for (int i = 0; i < 3; i++) {
-		tri_world[X][i] = vert_world[i][X];
-		tri_world[Y][i] = vert_world[i][Y];
-		tri_world[Z][i] = vert_world[i][Z];
-		tri_world[3][i] = 1;
+		world_tri[X][i] = model_vert[i][X];
+		world_tri[Y][i] = model_vert[i][Y];
+		world_tri[Z][i] = model_vert[i][Z];
+		world_tri[3][i] = 1;
 	}
 
 	for (int i = 0; i < 4; i++)
 		for (int j = 0; j < 3; j++)
 			for (int m = 0; m < 4; m++)
-				tri_screen[i][j] += Xsw[i][m] * tri_world[m][j];
+				screen_tri[i][j] += Xsw[i][m] * world_tri[m][j];
 
 	for (int i = 0; i < 3; i++) {
-		vert_screen[i][X] = tri_screen[X][i] / tri_screen[3][i];
-		vert_screen[i][Y] = tri_screen[Y][i] / tri_screen[3][i];
-		vert_screen[i][Z] = tri_screen[Z][i] / tri_screen[3][i];
+		screen_vert[i][X] = screen_tri[X][i] / screen_tri[3][i];
+		screen_vert[i][Y] = screen_tri[Y][i] / screen_tri[3][i];
+		screen_vert[i][Z] = screen_tri[Z][i] / screen_tri[3][i];
 	}
 }
 
@@ -676,18 +676,15 @@ int checkTri(std::vector<Vertex>& v, unsigned short	xres, unsigned short yres) {
 	int d_f = 0;
 	int v_n = 0;
 	for (int i = 0; i < 3; i++) {
-		if (v[i].z < 0)
-		{
+		if (v[i].z < 0) {
 			d_f = 1;
 			break;
 		}
-		if ((v[i].x < 0 || v[i].x > xres) || (v[i].y < 0 || v[i].y > yres))
-		{
+		if ((v[i].x < 0 || v[i].x > xres) || (v[i].y < 0 || v[i].y > yres)) {
 			v_n++;
 		}
 	}
-	if (v_n == 3)
-	{
+	if (v_n == 3) {
 		d_f = 1;
 	}
 	return d_f;
