@@ -40,18 +40,30 @@ int tex_fun(float u, float v, GzColor color)
 	fclose(fd);
   }
 
-/* bounds-test u,v to make sure nothing will overflow image array bounds */
-/* determine texture cell corner values and perform bilinear interpolation */
-/* set color to interpolated GzColor value and return */
-
-  
-	return GZ_SUCCESS;
+  // hw5
+  if (u > 1)  u = 1;
+  if (u < 0)  u = 0;
+  if (v > 1)  v = 1;
+  if (v < 0)  v = 0;
+  float px, py;
+  float s, t;
+  px = u * (xs - 1);
+  py = v * (ys - 1);
+  s = px - floor(px);
+  t = py - floor(py);
+  GzColor colorA, colorB, colorC, colorD;
+  for (i = 0; i < 3; i++)  colorA[i] = image[xs * (int) floor(py) + (int) floor(px)][i];
+  for (i = 0; i < 3; i++)  colorB[i] = image[xs * (int) floor(py) + (int) ceil(px)][i];
+  for (i = 0; i < 3; i++)  colorC[i] = image[xs * (int) ceil(py) + (int) ceil(px)][i];
+  for (i = 0; i < 3; i++)  colorD[i] = image[xs * (int) ceil(py) + (int) floor(px)][i];
+  for (i = 0; i < 3; i++)  color[i] = s * t * colorC[i] + (1 - s) * t * colorD[i] + s * (1 - t) * colorB[i] + (1 - s) * (1 - t) * colorA[i];
+  return GZ_SUCCESS;
 }
 
-/* Procedural texture function */
+// hw5
 int ptex_fun(float u, float v, GzColor color)
 {
-
+	for (int i = 0; i < 3; i++)  color[i] = (int(floor(u * 10)) % 2 == 1) && (int(floor(v * 10)) % 2 == 1);
 	return GZ_SUCCESS;
 }
 
