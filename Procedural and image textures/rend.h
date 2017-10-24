@@ -106,6 +106,7 @@ public:
 	int GzPutTriangle(int numParts, GzToken *nameList, GzPointer *valueList);
 	void LEE(GzCoord* vertices, GzCoord* normals, GzTextureIndex*);
 	int getColor(GzColor color, GzCoord norm);
+	int getTexture(GzColor color, GzCoord norm);
 
 	// HW3
 	int GzPutCamera(GzCamera camera);
