@@ -2,7 +2,6 @@
 C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\atlmfc\include\afx.h(38): warning C4996: 'MBCS_Support_Deprecated_In_MFC': MBCS support in MFC is deprecated and may be removed in a future version of MFC.
   C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\atlmfc\include\afx.h(33): note: see declaration of 'MBCS_Support_Deprecated_In_MFC'
   _WIN32_WINNT not defined. Defaulting to _WIN32_WINNT_MAXVER (see WinSDKVer.h)
-  TranslateDlg.cpp
   tex_fun.cpp
 tex_fun.cpp(34): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
 tex_fun.cpp(35): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
@@ -14,8 +13,6 @@ tex_fun.cpp(20): warning C4996: 'fopen': This function or variable may be unsafe
 tex_fun.cpp(25): warning C4996: 'fscanf': This function or variable may be unsafe. Consider using fscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\stdio.h(1193): note: see declaration of 'fscanf'
 tex_fun.cpp(16): warning C4101: 'j': unreferenced local variable
-  ScaleDlg.cpp
-  RotateDlg.cpp
   rend.cpp
 rend.cpp(94): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
 rend.cpp(97): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
@@ -37,6 +34,9 @@ rend.cpp(557): warning C4244: 'initializing': conversion from 'int' to 'float', 
 rend.cpp(574): warning C4244: '=': conversion from 'float' to 'GzDepth', possible loss of data
 rend.cpp(602): warning C4244: '=': conversion from 'float' to 'GzDepth', possible loss of data
 rend.cpp(643): warning C4244: '=': conversion from 'float' to 'GzDepth', possible loss of data
+  TranslateDlg.cpp
+  ScaleDlg.cpp
+  RotateDlg.cpp
   MainFrm.cpp
   CS580HWView.cpp
   CS580HWDoc.cpp
@@ -83,6 +83,6 @@ Application5.cpp(248): warning C4996: 'fscanf': This function or variable may be
   C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\stdio.h(1193): note: see declaration of 'fscanf'
   Application.cpp
   Generating Code...
-  LINK : program database D:\VSWorkSpace\opengl-bootcamp\Accumulation buffer anti-aliasing\Debug\CS580HW5.pdb missing; performing full link
-  CS580HW5.vcxproj -> D:\VSWorkSpace\opengl-bootcamp\Accumulation buffer anti-aliasing\.\Debug\CS580HW5.exe
+  LINK : program database D:\VSWorkSpace\opengl-bootcamp\Procedural and image textures\Debug\CS580HW5.pdb missing; performing full link
+  CS580HW5.vcxproj -> D:\VSWorkSpace\opengl-bootcamp\Procedural and image textures\.\Debug\CS580HW5.exe
   CS580HW5.vcxproj -> .\Debug\CS580HW5.pdb (Full PDB)

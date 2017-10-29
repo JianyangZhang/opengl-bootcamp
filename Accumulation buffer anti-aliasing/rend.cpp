@@ -576,9 +576,9 @@ void GzRender::LEE(GzCoord* vertices, GzCoord* normals, GzTextureIndex* uvCoord)
 					if (interp_mode == GZ_COLOR) {
 						GzColor cv0, cv1, cv2;
 
-						getColor(cv0, normals[0]);
-						getColor(cv1, normals[1]);
-						getColor(cv2, normals[2]);
+						getTexture(cv0, normals[0]);
+						getTexture(cv1, normals[1]);
+						getTexture(cv2, normals[2]);
 
 						GzTextureIndex UV;
 						UV[0] = (A0 * uvCoord[0][0] + A1 * uvCoord[1][0] + A2 * uvCoord[2][0]) / area;
@@ -896,5 +896,69 @@ int GzRender::getColor(GzColor color, GzCoord norm) {
 	color[0] = specularIntensity[0] + diffuseIntensity[0] + ambientIntensity[0];
 	color[1] = specularIntensity[1] + diffuseIntensity[1] + ambientIntensity[1];
 	color[2] = specularIntensity[2] + diffuseIntensity[2] + ambientIntensity[2];
+	return GZ_SUCCESS;
+}
+
+int GzRender::getTexture(GzColor color, GzCoord norm) {
+	GzCoord* reflect = (GzCoord*) malloc(sizeof(GzCoord) *numlights);
+	int* checker = (int*) malloc(sizeof(int) *numlights);
+	GzCoord eye, negativeN = { -norm[X], -norm[Y], -norm[Z] };
+	float NL, NE, RE;
+	
+	eye[X] = 0;
+	eye[Y] = 0;
+	eye[Z] = -1;
+	normalize(eye);
+	normalize(norm);
+	NE = dotProduct(norm, eye);
+
+	for (int i = 0; i < numlights; i++) {
+		NL = dotProduct(norm, lights[i].direction);
+		if (NL >= 0 && NE >= 0) {
+			checker[i] = 1;
+			reflect[i][X] = 2 * NL*norm[X] - lights[i].direction[X];
+			reflect[i][Y] = 2 * NL*norm[Y] - lights[i].direction[Y];
+			reflect[i][Z] = 2 * NL*norm[Z] - lights[i].direction[Z];
+			normalize(reflect[i]);
+		} else if (NL < 0 && NE < 0) {
+			checker[i] = -1;
+			reflect[i][X] = 2 * NL*(-norm[X]) - lights[i].direction[X];
+			reflect[i][Y] = 2 * NL*(-norm[Y]) - lights[i].direction[Y];
+			reflect[i][Z] = 2 * NL*(-norm[Z]) - lights[i].direction[Z];
+			normalize(reflect[i]);
+		} else {
+			checker[i] = 0;
+			continue;
+		}
+	}
+
+	GzColor diffuseSum = { 0, 0, 0 };
+	for (int i = 0; i < numlights; ++i) {
+		if (checker[i] == 0) continue;
+		if (checker[i] == 1) {
+			diffuseSum[0] += lights[i].color[0] * dotProduct(norm, lights[i].direction);
+			diffuseSum[1] += lights[i].color[1] * dotProduct(norm, lights[i].direction);
+			diffuseSum[2] += lights[i].color[2] * dotProduct(norm, lights[i].direction);
+		} else if (checker[i] == -1) {
+			diffuseSum[0] += lights[i].color[0] * dotProduct(negativeN, lights[i].direction);
+			diffuseSum[1] += lights[i].color[1] * dotProduct(negativeN, lights[i].direction);
+			diffuseSum[2] += lights[i].color[2] * dotProduct(negativeN, lights[i].direction);
+		}
+	}
+
+	GzColor specularSum = { 0, 0, 0 };
+	for (int i = 0; i < numlights; ++i) {
+		if (checker[i] == 0) continue;
+		RE = dotProduct(reflect[i], eye);
+		if (RE < 0) { RE = 0; }
+		if (RE > 1) { RE = 1; }
+		specularSum[0] += lights[i].color[0] * pow(RE, spec);
+		specularSum[2] += lights[i].color[2] * pow(RE, spec);
+	}
+
+	color[0] = specularSum[0] + diffuseSum[0];
+	color[1] = specularSum[1] + diffuseSum[1];
+	color[2] = specularSum[2] + diffuseSum[2];
+
 	return GZ_SUCCESS;
 }
