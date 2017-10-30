@@ -18,7 +18,10 @@ static char THIS_FILE[]=__FILE__;
 
 Application::Application()
 {
-	m_pRender = NULL;		// the renderer
+	for (int i = 0; i < 6; i++) {
+		subRender[i] = NULL;
+	}
+	m_pRender = NULL;
 	m_pUserInput = NULL;
 	m_pFrameBuffer = NULL;
 }

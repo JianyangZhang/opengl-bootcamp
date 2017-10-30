@@ -19,7 +19,8 @@ public:
 	virtual ~Application();
 	
 public:
-	GzRender*  m_pRender;		// the renderer
+	GzRender*  m_pRender;
+	GzRender*  subRender[6];
 	GzInput*   m_pUserInput;
 	char* m_pFrameBuffer;	// Frame Buffer
 	int   m_nWidth;			// width of Frame Buffer

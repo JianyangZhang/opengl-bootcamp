@@ -85,6 +85,8 @@ public:
 	GzColor		Ka, Kd, Ks;
 	float		    spec;		/* specular power */
 	GzTexture		tex_fun;    /* tex_fun(float u, float v, GzColor color) */
+	float dx;
+	float dy;
 
   	// Constructors
 	GzRender(int xRes, int yRes);

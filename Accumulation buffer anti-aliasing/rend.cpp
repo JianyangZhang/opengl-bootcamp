@@ -165,7 +165,8 @@ int GzRender::GzDefault()
 int GzRender::GzBeginRender()
 {
 	float rad = radianOf(m_camera.FOV / 2);
-
+	dx = 0;
+	dy = 0;
 	m_camera.Xpi[0][0] = 1;
 	m_camera.Xpi[0][1] = 0;
 	m_camera.Xpi[0][2] = 0;
@@ -468,6 +469,14 @@ int GzRender::GzPutAttribute(int numAttributes, GzToken* nameList, GzPointer* va
 		if (nameList[i] == GZ_TEXTURE_MAP) {
 			tex_fun = (GzTexture) (valueList[i]);
 		}
+		if (nameList[i] == GZ_AASHIFTX) {
+			float* shiftX = (float*) valueList[i];
+			dx = *shiftX;
+		}
+		if (nameList[i] == GZ_AASHIFTY) {
+			float* shiftY = (float*) valueList[i];
+			dy = *shiftY;
+		}
 	}
 	return GZ_SUCCESS;
 }
@@ -490,6 +499,10 @@ int GzRender::GzPutTriangle(int	numParts, GzToken *nameList, GzPointer *valueLis
 		if (nameList[i] == GZ_POSITION) {
 			model_vert = (GzCoord*) valueList[i];
 			vertToScreen(model_vert, Ximage[matlevel - 1], screen_vert);
+			for (int i = 0; i < 3; i++) {
+				screen_vert[i][X] -= dx;
+				screen_vert[i][Y] -= dy;
+			}
 		}
 		if (nameList[i] == GZ_NORMAL) {
 			model_normal = (GzCoord*) valueList[i];
